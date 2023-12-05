@@ -1,0 +1,22 @@
+FROM gcc:4.9
+MAINTAINER fjr<jingruf@kth.se>
+
+# install cmake
+RUN apt-get update
+RUN apt-get install -y --force-yes build-essential libssl-dev
+
+COPY . /usr/src/myapp
+WORKDIR /usr/src/myapp/cmake-3.17.3/
+
+RUN ./bootstrap
+RUN make
+RUN make install
+RUN cmake --version
+ 
+# complie Ladder
+WORKDIR /usr/src/myapp/Ladder/
+RUN ./setup_linux.sh
+WORKDIR /usr/src/myapp/Ladder/Ladder/build
+
+#CMD /bin/bash
+ENTRYPOINT ["tail", "-f", "/dev/null"]
