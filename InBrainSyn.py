@@ -89,13 +89,13 @@ def step1_extract_SVF(is_half = False, single_cohort = 'HC', run_Baseline = Fals
                                                            avg_img_path, n_condns=1, output_vel=True)
     if is_half == True:
         vel_field = vel_half
-        save_name = '_half'
+        save_name = 'half_'
     else:
         save_name = ''
     # save
     vel_field = vel_field.numpy().squeeze()
-    vxm.py.utils.save_volfile(vel_field, f'{data_path}inter_SVF{save_name}{single_cohort}.nii.gz')
-    vt.correct_vox2ras_matrix(f'{data_path}inter_SVF{save_name}{single_cohort}.nii.gz', reference_nifiti='./src/align_norm.nii.gz')
+    vxm.py.utils.save_volfile(vel_field, f'{data_path}inter_SVF_{save_name}{single_cohort}.nii.gz')
+    vt.correct_vox2ras_matrix(f'{data_path}inter_SVF_{save_name}{single_cohort}.nii.gz', reference_nifiti='./src/align_norm.nii.gz')
 
 def step2_parallel_transport():
     # create subject map
@@ -140,6 +140,9 @@ def step3_apply_transported_SVF(prefix='', single_cohort = ''):
 
     transported_SVFs = sorted([i for i in os.listdir(data_path) if i.startswith(f"transported_SVF{prefix}")])
 
+    if not transported_SVFs:
+        raise FileNotFoundError("No transported SVF files found! Please run the parallel transport step first.")
+
     for i, svf in enumerate(transported_SVFs):
         vel = vxm.py.utils.load_volfile(f'{data_path}{svf}', add_batch_axis=True, add_feat_axis=False).transpose((0,3,2,1,4)) # 1x208x176x160x3x1
         diff_field = VecInt(method='ss', int_steps=5, name='def_field')(vel)
@@ -157,6 +160,6 @@ def step3_apply_transported_SVF(prefix='', single_cohort = ''):
         vxm.py.utils.save_volfile(moved_seg, f'{data_path}synthetic{prefix}_{single_cohort}_{i}_seg.nii.gz')
         vt.correct_vox2ras_matrix(f'{data_path}synthetic{prefix}_{single_cohort}_{i}_seg.nii.gz', reference_nifiti='./src/align_norm.nii.gz')
 
-# step1_extract_SVF(is_half = True, single_cohort='Inter', run_InBrainSyn=True) # By running this, you could get three intra_SVF files and one inter_SVF file in the "data_path"
+# step1_extract_SVF(is_half = True, single_cohort='HC', run_InBrainSyn=True) # By running this, you could get three intra_SVF files and one inter_SVF file in the "data_path"
 # step2_parallel_transport() # By running this, you could get I0 MASK file in the "data_path", which is material for parallel transport
 # step3_apply_transported_SVF('_half', single_cohort = 'HC') # by running this, you could get synthetic scans and segmentation masks derived from the given single scan
