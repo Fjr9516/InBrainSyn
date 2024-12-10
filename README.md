@@ -24,7 +24,7 @@ This repository contains the source code for the research paper titled "*Synthes
 
 To use this dataset (including the examples in this repository), please cite the following and adhere to the [Data Use Agreement](https://www.oasis-brains.org/#access):
 
-> Pamela J LaMontagne et al., "OASIS-3: Longitudinal Neuroimaging, Clinical, and Cognitive Dataset for Normal Aging and Alzheimer Disease," *medRxiv* (2019). DOI: [10.1101/2019.12.13.19014902](10.1101/2019.12.13.19014902).
+> Pamela J LaMontagne et al., "OASIS-3: Longitudinal Neuroimaging, Clinical, and Cognitive Dataset for Normal Aging and Alzheimer Disease," *medRxiv* (2019). DOI: [10.1101/2019.12.13.19014902](https://doi.org/10.1101/2019.12.13.19014902).
 
 ---
 
