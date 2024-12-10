@@ -2,28 +2,78 @@
 
 ![Pipeline](./figs/pipeline.png)
 
-This repository contains the source code for the research paper titled "*Individualized Brain MRI Synthesis from a Single Scan: Applications to Aging and Alzheimer's Disease*". You can find the paper [here](xxx).
+This repository contains the source code for the research paper titled "*Synthesizing Individualized Aging Brains in Health and in Disease with Generative Models and Parallel Transport*". You can find the paper [here](xxx).
 
-## TODOs
-- [ ] Add the link to the paper
-- [X] Add the Dockerfile to run Pole Ladder
-- [X] Share the pre-trained weights
+---
+
+> **Note**  
+> 🚀 The Docker image for running Pole Ladder is now available on Docker Hub!
+
+---
+
+## Table of Contents
+- [OASIS-3 Dataset](#oasis-3-dataset)
+- [Pre-trained Template Creation Models](#pre-trained-template-creation-models)
+- [Instructions](#instructions)
+- [Citation](#citation)
+- [Acknowledgements](#acknowledgements)
+
+---
 
 ## OASIS-3 Dataset
-If you use this dataset (including the examples in this repo), please cite the following and refer to the corresponding [Data Use Agreement](https://www.oasis-brains.org/#access) .
-- OASIS-3: Longitudinal Neuroimaging, Clinical, and Cognitive Dataset for Normal Aging and Alzheimer Disease.
-Pamela J LaMontagne, Tammie L.S. Benzinger, John C. Morris, Sarah Keefe, Russ Hornbeck, Chengjie Xiong, Elizabeth Grant, Jason Hassenstab, Krista Moulder, Andrei Vlassenko, Marcus E. Raichle, Carlos Cruchaga, Daniel Marcus, 2019. medRxiv. doi: 10.1101/2019.12.13.19014902
 
-## Pre-trained AD and HC Template Creation Models
-We offer pretrained Atlas-GAN weights trained on the OASIS-3 Dataset for simulating normal aging and Alzheimer's Disease. Additionally, we provide inference scripts for extracting the learned diffeomorphic registration module and template generation module. (in `./models` and `./src`)
+To use this dataset (including the examples in this repository), please cite the following and adhere to the [Data Use Agreement](https://www.oasis-brains.org/#access):
+
+> Pamela J LaMontagne et al., "OASIS-3: Longitudinal Neuroimaging, Clinical, and Cognitive Dataset for Normal Aging and Alzheimer Disease," *medRxiv* (2019). DOI: [10.1101/2019.12.13.19014902](10.1101/2019.12.13.19014902).
+
+---
+
+## Pre-trained Template Creation Models
+
+Pre-trained [Atlas-GAN](https://github.com/neel-dey/Atlas-GAN) weights are available [here](xxx). Download and place them in the appropriate directory.
+
+---
 
 ## Instructions
-The main steps in the pipeline are summarized and demonstrated in `InBrainSyn.py` using a subject from the OASIS3 dataset, transitioning from healthy to AD. Pole ladder is used for parallel transport. If you use InBrainSyn, please also cite the following:
 
-- Longitudinal Analysis of Image Time Series with Diffeomorphic Deformations: A Computational Framework Based on Stationary Velocity Fields.
-Mehdi Hadj-Hamou, Marco Lorenzi, Nicholas Ayache, and Xavier Pennec, 2016. Frontiers in neuroscience. doi: 10.3389/fnins.2016.00236
+The pipeline is demonstrated in `InBrainSyn.py` using a subject from the OASIS-3 dataset. Parallel transport is performed using Pole Ladder. Follow the steps below for proper execution:
 
-We also provide Dockerfile in the directory `./Dockerfiles` to ease the use of this tool. Note that you need to download [Pole ladder](http://www-sop.inria.fr/teams/asclepios/software/LCClogDemons/Ladder.tar.gz) and cmake (I used [cmake-3.17.3](https://cmake.org/files/v3.17/)), and then unzip them in the same folder to successfully build the Docker image.
+1. **Run Step 1 and Step 2** to extract the SVF and prepare the data for running Pole Ladder.
+2. **Run Pole Ladder** within the Docker container.
+3. After the transported SVF is generated, proceed to **Step 3** to apply the transported SVF and generate the final outputs.
+
+### Quick Setup
+To set up the environment for running most parts of `InBrainSyn`, follow these steps:
+
+```bash
+# Create a Conda environment
+conda create -n tf_gpu_2.5 python=3.8 -y
+
+# Activate the environment
+conda activate tf_gpu_2.5
+
+# Install required packages
+pip install tensorflow-gpu==2.5.0 voxelmorph matplotlib==3.4.3 nibabel==3.2.1 scikit-image==0.18.3 scipy==1.5.4 pandas==1.2.3 numpy==1.19.5 tensorflow-addons==0.13.0
+conda install cudatoolkit=11.2 cudnn=8.1 simpleitk jupyterlab -c conda-forge
+
+# Verify installation
+python -c "import tensorflow as tf; print('TensorFlow version:', tf.__version__)"
+python -c "import voxelmorph as vxm; print('VoxelMorph version:', vxm.__version__)"
+```
+
+For running pole ladder, you can use Dockerfile in the directory `./Dockerfiles`. Note that you need to download [Pole ladder](http://www-sop.inria.fr/teams/asclepios/software/LCClogDemons/Ladder.tar.gz) and cmake (I used [cmake-3.17.3](https://cmake.org/files/v3.17/)), and then unzip them in the same folder to successfully build the Docker image. 
+
+Alternatively, you could pull the pre-built Docker image:
+
+```bash
+# Pull the pre-built Docker image
+docker pull jrfu/pole_ladder:latest
+
+# Start a container
+docker run -it --rm -v "$(pwd)/examples/shared_volume/:/usr/src/myapp/volume/" --name c1_ladder jrfu/pole_ladder:latest
+```
+
+Once the container is running, copy the file `step2_parallel_transport_using_SchildsLadder_example.sh` to `./examples/shared_volume/`.
 
 ## Citation
 ```
