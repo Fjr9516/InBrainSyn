@@ -30,7 +30,7 @@ To use this dataset (including the examples in this repository), please cite the
 
 ## Pre-trained Template Creation Models
 
-Pre-trained [Atlas-GAN](https://github.com/neel-dey/Atlas-GAN) weights are available [here](xxx). Download and place them in the appropriate directory.
+Pre-trained [Atlas-GAN](https://github.com/neel-dey/Atlas-GAN) weights are available [here](https://github.com/Fjr9516/InBrainSyn/releases/tag/v1.0.0). Download and place them in the appropriate directory.
 
 ---
 
