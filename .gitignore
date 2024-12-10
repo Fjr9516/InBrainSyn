@@ -7,3 +7,8 @@ __pycache__/
 models/
 examples/
 **/__pycache__/
+outputs/
+**/*.nii.gz
+
+# Ignore experimental files
+pipeline.ipynb
