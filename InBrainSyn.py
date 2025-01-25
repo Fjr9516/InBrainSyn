@@ -28,7 +28,9 @@ def read_csv_subj(subj):
     cdrs = df["scan_cdr"][df["subject_ids"] == subj]
     return list(ages), list(cdrs)
 
-def step1_extract_SVF(is_half = False, single_cohort = 'HC', run_Baseline = False, run_InBrainSyn = False): # single_cohort = ''/'HC'/'AD'
+def step1_extract_SVF(is_half = False, single_cohort = 'HC', run_Baseline = False, run_InBrainSyn = True): # single_cohort = ''/'HC'/'AD'
+    print("Step 1: Extracting SVF and setting up parallel transport...")
+    
     # show img and age
     ages = []
     imgs = []
@@ -97,7 +99,6 @@ def step1_extract_SVF(is_half = False, single_cohort = 'HC', run_Baseline = Fals
     vxm.py.utils.save_volfile(vel_field, f'{data_path}inter_SVF_{save_name}{single_cohort}.nii.gz')
     vt.correct_vox2ras_matrix(f'{data_path}inter_SVF_{save_name}{single_cohort}.nii.gz', reference_nifiti='./src/align_norm.nii.gz')
 
-def step2_parallel_transport():
     # create subject map
     I0_data = f"{[i for i in sorted(os.listdir(data_path)) if i.endswith('.npz')][0]}"
     print(f'==== {I0_data} ====')
@@ -110,7 +111,8 @@ def step2_parallel_transport():
     # save
     vxm.py.utils.save_volfile(sub_MASK, f'{data_path}I0_MASK.nii.gz')
     vt.correct_vox2ras_matrix(f'{data_path}I0_MASK.nii.gz', reference_nifiti='./src/align_norm.nii.gz')
-
+    print("Step 1 completed. Please run the script for Step 2 (parallel transport) before proceeding.")
+    
 def step3_apply_transported_SVF(prefix='', single_cohort = ''):
     # step3: apply transported SVF on subject 0
     ages = []
@@ -160,6 +162,34 @@ def step3_apply_transported_SVF(prefix='', single_cohort = ''):
         vxm.py.utils.save_volfile(moved_seg, f'{data_path}synthetic{prefix}_{single_cohort}_{i}_seg.nii.gz')
         vt.correct_vox2ras_matrix(f'{data_path}synthetic{prefix}_{single_cohort}_{i}_seg.nii.gz', reference_nifiti='./src/align_norm.nii.gz')
 
-# step1_extract_SVF(is_half = True, single_cohort='HC', run_InBrainSyn=True) # By running this, you could get three intra_SVF files and one inter_SVF file in the "data_path"
-# step2_parallel_transport() # By running this, you could get I0 MASK file in the "data_path", which is material for parallel transport
-# step3_apply_transported_SVF('_half', single_cohort = 'HC') # by running this, you could get synthetic scans and segmentation masks derived from the given single scan
+# Main entry point
+def main():
+    parser = argparse.ArgumentParser(description="Script of main steps for InBrainSyn.")
+    parser.add_argument(
+        "--step",
+        type=int,
+        choices=[1, 3],
+        required=True,
+        help="Specify the step to run: 1 for Step 1 (Extract SVF), 3 for Step 3 (Apply Transported SVF).",
+    )
+    parser.add_argument(
+        "--is_half",
+        action="store_true",
+        help="Use half SVF field for Step 1.",
+    )
+    parser.add_argument(
+        "--single_cohort",
+        type=str,
+        choices=["", "HC", "AD"],
+        default="HC",
+        help="Specify the cohort: '', 'HC', or 'AD'.",
+    )
+    args = parser.parse_args()
+
+    if args.step == 1:
+        step1_extract_SVF(is_half=args.is_half, single_cohort=args.single_cohort, run_InBrainSyn=True)
+    elif args.step == 3:
+        step3_apply_transported_SVF(prefix='_half' if args.is_half else '', single_cohort=args.single_cohort)
+
+if __name__ == "__main__":
+    main()
