@@ -164,6 +164,7 @@ def step3_apply_transported_SVF(prefix='', single_cohort = ''):
 
 # Main entry point
 def main():
+    import argparse
     parser = argparse.ArgumentParser(description="Script of main steps for InBrainSyn.")
     parser.add_argument(
         "--step",
@@ -184,7 +185,10 @@ def main():
         default="HC",
         help="Specify the cohort: '', 'HC', or 'AD'.",
     )
-    args = parser.parse_args()
+    
+    # Use parse_known_args() to avoid conflicts
+    args, unknown = parser.parse_known_args()  # Ignores extra arguments
+    # args = parser.parse_args()
 
     if args.step == 1:
         step1_extract_SVF(is_half=args.is_half, single_cohort=args.single_cohort, run_InBrainSyn=True)

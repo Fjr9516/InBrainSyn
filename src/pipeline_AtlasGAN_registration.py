@@ -4,7 +4,8 @@ import numpy as np
 import tensorflow as tf
 import os
 import random
-import argparse
+# import argparse
+import json 
 
 from numpy.random import seed
 from tensorflow.compat.v1 import set_random_seed
@@ -18,102 +19,38 @@ import voxelmorph as vxm
 from voxelmorph.tf.layers import SpatialTransformer, VecInt, RescaleTransform
 
 # ----------------------------------------------------------------------------
-# Set up CLI arguments:
-# TODO: replace with a config json. CLI is unmanageably large now.
-# TODO: add option for type of discriminator augmentation.
+# Load configuration from `config.json`
+config_path = os.path.join(os.path.dirname(__file__), "config.json")
+with open(config_path, "r") as f:
+    config = json.load(f)
 
-parser = argparse.ArgumentParser()
-
-parser.add_argument('--epochs', type=int, default=200)
-parser.add_argument('--batch_size', type=int, default=1)
-parser.add_argument('--dataset', type=str, default='OASIS3')
-parser.add_argument('--name', type=str, default='experiment_name')
-parser.add_argument('--d_train_steps', type=int, default=1)
-parser.add_argument('--g_train_steps', type=int, default=1)
-
-# TTUR for training GAN, already set the default values in consistent with appendices
-parser.add_argument('--lr_g', type=float, default=1e-4)
-parser.add_argument('--lr_d', type=float, default=3e-4)
-parser.add_argument('--beta1_g', type=float, default=0.0)
-parser.add_argument('--beta2_g', type=float, default=0.9)
-parser.add_argument('--beta1_d', type=float, default=0.0)
-parser.add_argument('--beta2_d', type=float, default=0.9)
-
-parser.add_argument(
-    '--unconditional', dest='conditional', default=True, action='store_false',
-)
-parser.add_argument(
-    '--nonorm_reg', dest='norm_reg', default=True, action='store_false',
-)  # Not used in the paper.
-parser.add_argument(
-    '--oversample', dest='oversample', default=True, action='store_false',
-)
-parser.add_argument(
-    '--d_snout', dest='d_snout', default=False, action='store_true',
-)
-parser.add_argument(
-    '--noclip', dest='clip_bckgnd', default=True, action='store_false',
-)  # should be True, updated
-parser.add_argument('--reg_loss', type=str,
-                    default='NCC')  # One of {'NCC', 'NonSquareNCC'}. Not used NonSquareNCC in paper
-parser.add_argument('--losswt_reg', type=float, default=1.0)
-parser.add_argument('--losswt_gan', type=float, default=0.1)
-parser.add_argument('--losswt_tv', type=float, default=0.00)  # Not used in the paper.
-parser.add_argument('--losswt_gp', type=float,
-                    default=1e-3)  # TODO: Gradient penalty for discriminator loss. Need to be adjusted according to dataset. Important!!!
-parser.add_argument('--gen_config', type=str, default='ours')  # One of {'ours', 'voxelmorph'}.
-parser.add_argument('--steps_per_epoch', type=int, default=1000)
-parser.add_argument('--rng_seed', type=int, default=33)
-parser.add_argument('--start_step', type=int,
-                    default=0)  # Not used in paper. GAN training is active from the first iteration.
-parser.add_argument('--resume_ckpt', type=int, default=0)  # checkopint
-parser.add_argument('--g_ch', type=int, default=32)
-parser.add_argument('--d_ch', type=int, default=64)
-parser.add_argument('--init', type=str, default='default')  # One of {'default', 'orthogonal'}.
-parser.add_argument('--lazy_reg', type=int, default=1)  # Not used in the paper.
-
-# my arguments
-parser.add_argument('--checkpoint_path', type=str,
-                    default='/home/fjr/data/trained_models/Atlas-GAN/training_checkpoints/gploss_1e_4_dataset_OASIS3_eps200_Gconfig_ours_normreg_True_lrg0.0001_lrd0.0003_cond_True_regloss_NCC_lbdgan_0.1_lbdreg_1.0_lbdtv_0.0_lbdgp_0.0001_dsnout_False_start_0_clip_True/')
-parser.add_argument('--save_path', type=str, default='/home/fjr/data/trained_models/Atlas-GAN/my_plot_1e-4/')
-
-args = parser.parse_args()
-
-# my CLI
-checkpoint_path = args.checkpoint_path  # None
-save_path = args.save_path  # None
-
-# Get CLI information:
-epochs = args.epochs
-batch_size = args.batch_size
-dataset = args.dataset
-exp_name = args.name
-lr_g = args.lr_g
-lr_d = args.lr_d
-beta1_g = args.beta1_g
-beta2_g = args.beta2_g
-beta1_d = args.beta1_d
-beta2_d = args.beta2_d
-conditional = args.conditional
-reg_loss = args.reg_loss
-norm_reg = args.norm_reg
-oversample = args.oversample
-atlas_model = args.gen_config
-steps = args.steps_per_epoch
-lambda_gan = args.losswt_gan
-lambda_reg = args.losswt_reg
-lambda_tv = args.losswt_tv
-lambda_gp = args.losswt_gp
-g_loss_wts = [lambda_gan, lambda_reg, lambda_tv]
-start_step = args.start_step
-rng_seed = args.rng_seed
-resume_ckpt = args.resume_ckpt
-d_snout = args.d_snout
-clip_bckgnd = args.clip_bckgnd
-g_ch = args.g_ch
-d_ch = args.d_ch
-init = args.init
-lazy_reg = args.lazy_reg
+epochs = config["epochs"]
+batch_size = config["batch_size"]
+dataset = config["dataset"]
+exp_name = config["name"]
+lr_g = config["lr_g"]
+lr_d = config["lr_d"]
+beta1_g = config["beta1_g"]
+beta2_g = config["beta2_g"]
+beta1_d = config["beta1_d"]
+beta2_d = config["beta2_d"]
+conditional = config["conditional"]
+norm_reg = config["norm_reg"]
+oversample = config["oversample"]
+d_snout = config["d_snout"]
+clip_bckgnd = config["clip_bckgnd"]
+reg_loss = config["reg_loss"]
+atlas_model = config["gen_config"]
+steps = config["steps_per_epoch"]
+rng_seed = config["rng_seed"]
+start_step = config["start_step"]
+resume_ckpt = config["resume_ckpt"]
+g_ch = config["g_ch"]
+d_ch = config["d_ch"]
+init = config["init"]
+lazy_reg = config["lazy_reg"]
+checkpoint_path = config["checkpoint_path"]
+save_path = config["save_path"]
 
 # ----------------------------------------------------------------------------
 # Set RNG seeds
