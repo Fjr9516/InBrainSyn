@@ -1,4 +1,8 @@
 # !/bin/bash
+
+# Change to the directory where SchildsLadder is located
+# cd /usr/src/myapp/Ladder/Ladder/build/ || exit 1
+
 # Iterate over numbers from 1 to 3
 subj="OAS30331"
 for i in {1..3}; do
