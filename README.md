@@ -2,7 +2,7 @@
 
 ![Pipeline](./figs/pipeline.png)
 
-This repository contains the source code for the research paper titled "*Synthesizing Individualized Aging Brains in Health and in Disease with Generative Models and Parallel Transport*". You can find the paper [here](xxx).
+This repository contains the source code for the research paper titled "*Synthesizing Individualized Aging Brains in Health and Disease with Generative Models and Parallel Transport*". You can find the paper [TODO](xxx).
 
 ---
 
