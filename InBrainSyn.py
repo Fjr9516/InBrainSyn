@@ -181,9 +181,9 @@ def main():
     parser.add_argument(
         "--single_cohort",
         type=str,
-        choices=["", "HC", "AD"],
+        choices=["Inter", "HC", "AD"],
         default="HC",
-        help="Specify the cohort: '', 'HC', or 'AD'.",
+        help="Specify the cohort: 'Inter', 'HC', or 'AD'.",
     )
     
     # Use parse_known_args() to avoid conflicts
