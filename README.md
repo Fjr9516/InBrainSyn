@@ -2,7 +2,7 @@
 
 ![Pipeline](./figs/pipeline.png)
 
-This repository contains the source code for the research paper titled "*Synthesizing Individualized Aging Brains in Health and Disease with Generative Models and Parallel Transport*". You can find the paper [here](https://arxiv.org/abs/2502.21049).
+This repository contains the source code for the research paper titled "*Synthesizing Individualized Aging Brains in Health and Disease with Generative Models and Parallel Transport*". You can find the paper [here](https://www.sciencedirect.com/science/article/pii/S1361841525002166). ([arXiv](https://arxiv.org/abs/2502.21049))
 
 ---
 
@@ -134,10 +134,14 @@ Tested on [Alvis](https://www.c3se.chalmers.se/about/Alvis/):
 ## Citation
 ```
 @article{fu2025synthesizing,
-  title={Synthesizing Individualized Aging Brains in Health and Disease with Generative Models and Parallel Transport},
-  author={Fu, Jingru and Zheng, Yuqi and Dey, Neel and Ferreira, Daniel and Moreno, Rodrigo},
-  journal={arXiv preprint arXiv:2502.21049},
-  year={2025}
+  title = {Synthesizing individualized aging brains in health and disease with generative models and parallel transport},
+  author = {Fu, Jingru and Zheng, Yuqi and Dey, Neel and Ferreira, Daniel and Moreno, Rodrigo},
+  journal = {Medical Image Analysis},
+  pages = {103669},
+  year = {2025},
+  issn = {1361-8415},
+  doi = {10.1016/j.media.2025.103669},
+  url = {https://www.sciencedirect.com/science/article/pii/S1361841525002166}
 }
 ```
 
