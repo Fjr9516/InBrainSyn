@@ -1,4 +1,4 @@
-# InBrainSyn
+# InBrainSyn: Individualized Brain Synthesis
 
 ![Pipeline](./figs/pipeline.png)
 
