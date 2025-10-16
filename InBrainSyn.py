@@ -19,7 +19,7 @@ AD_model_path = './models/AD_only/gploss_1e_4_dataset_OASIS3_single_cohort_eps30
 # test subject
 subj = 'OAS30331'
 avg_img_path = './src/'
-data_path = f'./examples/shared_volume/{subj}/'
+data_path = f'./examples/{subj}/'
 
 # functions
 def read_csv_subj(subj):
